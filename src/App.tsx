@@ -2,26 +2,41 @@ import React, {useEffect, useState} from 'react';
 import './App.css';
 import Counter from "./components/Counters/Counter";
 import ValueCounter from "./components/Counters/ValueCounter";
+import {useDispatch, useSelector} from "react-redux";
+import {AppStateType} from "./components/state/store";
+import {maxValueAC, renderDisplayAC} from "./components/state/counter-reducer";
 
 
 function App() {
-    const [renderDisplay, setRenderDisplay] = useState(false)
+
+    const dispatch = useDispatch()
+
+    const renderDisplay = useSelector<AppStateType, boolean>(state => state.counter.renderDisplay); // логика ошибки выбранного значения
+    const maxValue = useSelector<AppStateType, number>(state => state.counter.settingsValue.maxValue); // логика настройки max value input
+    const startValue = useSelector<AppStateType, number>(state => state.counter.settingsValue.startValue); // логика настройки start value input
+    // {maxValue: 0, startValue: 1},
     const [settingsValue, setSettingsValue] = useState<Array<number>>([0, 1])
-    const [counterValue, setCounterValue] = useState<number>(settingsValue[0])
+
+    // Перепиши для двух значений
+    // const [startValue,setStartValue] = useState<Array<number>>([1])
+    // const [maxValue,setMaxValue] = useState<Array<number>>([0])
+
+    const [counterValue, setCounterValue] = useState<number>(maxValue )
+    // const [counterValue, setCounterValue] = useState<number>(maxValue || 10)
 
     const increment = () => {
-        if (counterValue < settingsValue[1]) {
+        if (counterValue < maxValue) {
             setCounterValue(counterValue + 1)
         }
     }
 
     const reset = () => {
-        setCounterValue(settingsValue[0])
+        setCounterValue(maxValue)
     }
 
     const setInLocalStorage = () => {
-        localStorage.setItem("setting", JSON.stringify(settingsValue))
-        setRenderDisplay(false)
+        localStorage.setItem("setting", JSON.stringify(maxValue))
+        dispatch(renderDisplayAC(false))
         reset()
     }
 
@@ -29,17 +44,18 @@ function App() {
         let localStorageValue = localStorage.getItem("setting")
         if (localStorageValue) {
             setCounterValue(JSON.parse(localStorageValue)[0])
-            setSettingsValue(JSON.parse(localStorageValue))
+            // setSettingsValue(JSON.parse(localStorageValue))
+            dispatch(maxValueAC(JSON.parse(localStorageValue)))
         }
     }, [])
 
     return (
         <div className='header'>
 
-            <ValueCounter changeRendered={setRenderDisplay}
-                          onClickCallback={setInLocalStorage}
-                          onChangeCallback={setSettingsValue}
-                          settingsValue={settingsValue}
+            <ValueCounter
+                onClickCallback={setInLocalStorage}
+                onChangeCallback={setSettingsValue}
+                settingsValue={settingsValue}
             />
 
             <Counter
