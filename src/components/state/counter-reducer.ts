@@ -2,6 +2,7 @@ const initialState = {
     renderDisplay: false,
     error: false,
     settingsValue: {maxValue: 0, startValue: 1},
+    count: 0
 }
 
 //auto type
@@ -23,12 +24,15 @@ export const counterReducer = (
         case "START_VALUE": { // настройка start value input
             return {...state, settingsValue: {...state.settingsValue, startValue: action.startValue}}
         }
+        case "COUNTER_VALUE": { // увеличение счётчика
+            return {...state, count: action.count + 1}
+        }
         default:
             return state;
     }
 }
 
-type counterReducerType = RenderDisplayType | ErrorValueType | StartValueType | MaxValueType
+type counterReducerType = RenderDisplayType | ErrorValueType | StartValueType | MaxValueType | CounterValueType
 
 type RenderDisplayType = ReturnType<typeof renderDisplayAC>
 export const renderDisplayAC = (value: boolean) => ({type: "RENDER_DISPLAY", value} as const)
@@ -41,3 +45,8 @@ export const maxValueAC = (maxValue: number) => ({type: "MAX_VALUE", maxValue} a
 
 type StartValueType = ReturnType<typeof startValueAC>
 export const startValueAC = (startValue: number) => ({type: "START_VALUE", startValue} as const)
+
+type CounterValueType = ReturnType<typeof counterValueAC>
+export const counterValueAC = (count: number) => ({type: "COUNTER_VALUE", count} as const)
+
+
