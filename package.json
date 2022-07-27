@@ -1,5 +1,6 @@
 {
   "name": "counter",
+  "homepage": "https://evgeny3322.github.io/social-networks-ts/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
